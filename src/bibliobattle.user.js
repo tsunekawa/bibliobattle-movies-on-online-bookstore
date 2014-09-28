@@ -1,21 +1,35 @@
-function isbn13to10(isbn13) {
-  isbn13 += "";
-  var digits = [];
-  digits = isbn13.substr(3,9).split("") ;
-  var sum = 0; var chk_tmp, chk_digit;
-  for(var i = 0; i < 9; i++) {
-    sum += digits[i] * (10 - i);
+
+function convert_isbn13to10(isbn13) {
+  if(isbn13.length!=13){
+    throw isbn13 + " is not ISBN13.";
   }
-  chk_tmp= 11 - (sum % 11);
-  if (chk_tmp == 10) {
-    chk_digit = 'x';
-  } else if (chk_tmp == 11) {
-    chk_digit = 0;
-  } else {
-    chk_digit = chk_tmp;
+
+  var isbn10_ary = isbn13.substr(3,9).split("");
+  var sum    = 0;
+  var digit_number;
+  var check_digit;
+  var isbn10;
+
+  for (var i=0, len=isbn10_ary.length; i<len;i++){
+    sum+=isbn10_ary[i] * (10 - i);
   }
-  digits.push(chk_digit);
-  return digits.join("");
+
+  digit_number = 11 - (sum % 11);
+  switch(digit_number){
+    case 10:
+      check_digit = 'x';
+      break;
+    case 11:
+      check_digit = '0';
+      break;
+    default:
+      check_digit = digit_number;
+      break;
+  }
+
+  isbn10_ary.push(check_digit);
+  isbn10 = isbn10_ary.join("");
+  return isbn10;
 }
 
 var getYoutubeID = function (res, target_isbn){
@@ -25,7 +39,7 @@ var getYoutubeID = function (res, target_isbn){
     var row = res[i], isbn10, isbn13;
     var isbn = row["book:isbn"].replace(/-/g,"");
     if (isbn.length==13){
-      isbn = isbn13to10(isbn)
+      isbn = convert_isbn13to10(isbn)
     }
 
     if (isbn==target_isbn){
