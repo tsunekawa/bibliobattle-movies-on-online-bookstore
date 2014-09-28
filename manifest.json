@@ -1,0 +1,29 @@
+{
+  "manifest_version":2,
+  "version":"1.0",
+  "name": "Bibliobattle Movies at Amazon.co.jp",
+  "description": "Amazonの商品ページに対応するビブリオバトルのプレゼン動画を挿入します。",
+  "background": {
+    "scripts": [
+      "background.js"
+    ]
+  },
+  "content_scripts": [
+    {
+      "js": [
+        "jquery-2.1.1.min.js",
+        "bibliobattle.user.js"
+      ],
+      "matches": [
+        "http://*.amazon.co.jp/*",
+        "https://*.amazon.co.jp/*",
+        "http://*.amazon.com/*",
+        "https://*.amazon.com/*"
+      ],
+      "run_at": "document_end"
+    }
+  ],
+  "permissions": [
+    "https://raw.githubusercontent.com/"
+  ]
+}
