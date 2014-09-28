@@ -1,2 +1,2 @@
 #!/usr/bin/env sh
-zip bibliobattle-movies-in-amazon.zip src/*
+zip dist/bibliobattle-movies-in-amazon.zip src/*

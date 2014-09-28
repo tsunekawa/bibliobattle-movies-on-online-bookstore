@@ -1,6 +1,6 @@
 {
   "manifest_version":2,
-  "version":"1.0",
+  "version":"1.0.1",
   "name": "Bibliobattle Movies at Amazon.co.jp",
   "description": "Amazonの商品ページに対応するビブリオバトルのプレゼン動画を挿入します。",
   "background": {
