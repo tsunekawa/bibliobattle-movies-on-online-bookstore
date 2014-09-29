@@ -1,5 +1,39 @@
+(function (){
 
-function convert_isbn13to10(isbn13) {
+var escapeHTML = function (text){
+  return $('<div />').text(text).html();
+};
+
+var parseTSV = function (text){
+  var content = [];
+
+  if (text!=""){
+    var rows = escapeHTML(text).split("\n");
+    var header = rows.shift().split("\t");
+    for(var i=0, len=rows.length;i < len;i++){
+      var row = rows[i].split("\t");
+      var obj = {};
+      for(var j=0, jlen=header.length;j < jlen; j++){
+        obj[header[j]] = row[j];
+      }
+      content.push(obj);
+    }
+  }
+
+  return content;
+};
+
+var loadSourceData = function (callback){
+  var port = chrome.extension.connect();
+  port.postMessage();
+  port.onMessage.addListener(function (res){
+    callback.call(this, parseTSV(res));
+  });
+
+  return port;
+};
+
+var convert_isbn13to10 = function(isbn13) {
   if(isbn13.length!=13){
     throw isbn13 + " is not ISBN13.";
   }
@@ -30,7 +64,7 @@ function convert_isbn13to10(isbn13) {
   isbn10_ary.push(check_digit);
   isbn10 = isbn10_ary.join("");
   return isbn10;
-}
+};
 
 var getYoutubeID = function (res, target_isbn){
   var youtube_id;
@@ -49,18 +83,19 @@ var getYoutubeID = function (res, target_isbn){
   }
 
   return youtube_id;
-}
+};
 
-$(function (){
+// main block
+loadSourceData(function (res){
   var target_isbn = location.href.match(/[0-9X]{10,13}/)[0];
-  var port = chrome.extension.connect();
-  port.postMessage();
-  port.onMessage.addListener(function (res){
-    var youtube_id = getYoutubeID(res, target_isbn);
-    if (!!youtube_id){
-      $(".bucketDivider:first").before(
-          $('<hr class="bucketDivider" /><div class="bucket"><h2>ビブリオバトル動画</h2><iframe width="560" height="315" src="//www.youtube.com/embed/<<id>>" frameborder="0" allowfullscreen></iframe></p>'.replace("<<id>>", youtube_id))
-      );
-    }
-  });
+  var youtube_id = getYoutubeID(res, target_isbn);
+
+  if (!!youtube_id){
+    $(".bucketDivider:first").before(
+        $('<hr class="bucketDivider" /><div class="bucket"><h2>ビブリオバトル動画</h2><iframe width="560" height="315" src="//www.youtube.com/embed/<<id>>" frameborder="0" allowfullscreen></iframe></p>'.replace("<<id>>", youtube_id))
+    );
+  }
 });
+
+
+})();
