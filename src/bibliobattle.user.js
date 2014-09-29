@@ -1,10 +1,14 @@
 (function (){
 
+var escapeHTML = function (text){
+  return $('<div />').text(text).html();
+};
+
 var parseTSV = function (text){
   var content = [];
 
   if (text!=""){
-    var rows = text.split("\n");
+    var rows = escapeHTML(text).split("\n");
     var header = rows.shift().split("\t");
     for(var i=0, len=rows.length;i < len;i++){
       var row = rows[i].split("\t");
