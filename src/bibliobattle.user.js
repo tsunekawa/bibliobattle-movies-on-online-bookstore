@@ -72,6 +72,9 @@ var getYoutubeID = function (res, target_isbn){
   for (var i=0, len=res.length; i < len;i++){
     var row = res[i], isbn10, isbn13;
     var isbn = row["book:isbn"].replace(/-/g,"");
+    if (target_isbn.length==13){
+      target_isbn = convert_isbn13to10(target_isbn)
+    }
     if (isbn.length==13){
       isbn = convert_isbn13to10(isbn)
     }
@@ -85,15 +88,54 @@ var getYoutubeID = function (res, target_isbn){
   return youtube_id;
 };
 
+var extractPageContext = function (){
+  var url = location.href;
+  var isbn;
+  var context;
+
+  if (url.match(/http[s]{0,1}:\/\/www.amazon.co.jp\/.*$/)) {
+    isbn    = url.match(/[0-9X]{10,13}/)[0];
+    context = {service:"amazon", isbn:isbn};
+  } else if (url.match(/^http[s]{0,1}:\/\/www.kinokuniya.co.jp\/.*$/)){
+    isbn    = url.match(/[0-9X]{10,13}/)[0];
+    context = {service:"kinokuniya", isbn:isbn};
+  }else {
+    context = null;
+  }
+
+  return context;
+};
+
+var insertMovieByService = function (service_name, youtube_id){
+  var result;
+
+  switch(service_name){
+    case "amazon":
+      $(".bucketDivider:first").before(
+          $('<hr class="bucketDivider" /><div class="bucket"><h2>ビブリオバトル動画</h2><iframe width="560" height="315" src="//www.youtube.com/embed/<<id>>" frameborder="0" allowfullscreen></iframe></div>'.replace("<<id>>", youtube_id))
+      );
+      result = true;
+      break;
+    case "kinokuniya":
+      $(".career_box:first").before(
+          $('<div class="career_box"><h3>ビブリオバトル動画</h3><iframe width="560" height="315" src="//www.youtube.com/embed/<<id>>" frameborder="0" allowfullscreen></iframe></div><hr class="ymt_dlBtmBorder mb15" noshade />'.replace("<<id>>", youtube_id))
+      );
+      result = true;
+      break;
+  }
+
+  return result;
+};
+
 // main block
 loadSourceData(function (res){
-  var target_isbn = location.href.match(/[0-9X]{10,13}/)[0];
-  var youtube_id = getYoutubeID(res, target_isbn);
-
-  if (!!youtube_id){
-    $(".bucketDivider:first").before(
-        $('<hr class="bucketDivider" /><div class="bucket"><h2>ビブリオバトル動画</h2><iframe width="560" height="315" src="//www.youtube.com/embed/<<id>>" frameborder="0" allowfullscreen></iframe></p>'.replace("<<id>>", youtube_id))
-    );
+  var context     = extractPageContext();
+  if(!!context){
+    var target_isbn = context.isbn;
+    var youtube_id = getYoutubeID(res, target_isbn);
+    if (!!youtube_id){
+      insertMovieByService(context.service, youtube_id);
+    }
   }
 });
 
