@@ -138,6 +138,9 @@ var extractPageContext = function (){
   } else if (url.match(/^http[s]{0,1}:\/\/www.honyaclub.com\/.*$/)) {
     isbn    = /[0-9]{10,13}/.exec(document.querySelectorAll(".item-price")[0].innerHTML);
     context = {service:"honyaclub", isbn:isbn};
+  } else if (url.match(/^http[s]{0,1}:\/\/honto.jp\/.*$/)) {
+    isbn    = /ISBN：([0-9\-]+)/.exec(document.querySelectorAll(".stItemData")[0].innerHTML)[1].replace(/\-/g, "");
+    context = {service:"honto", isbn:isbn};
   }else {
     context = null;
   }
@@ -165,6 +168,11 @@ var insertMovieByService = function (service_name, youtube_id){
       document.querySelectorAll(".detail-block01")[0].insertAdjacentHTML("beforeend", template({youtube_id: youtube_id}));
       result = true;
       break;
+    case "honto":
+      template = _.template('<div class="pbNested pbNestedWrapper" id="bibliobattleMovie"><div class="stHdg2"><h2><span>ビブリオバトル動画</span></h2></div><div class="stSection01"><iframe width="560" height="315" src="//www.youtube.com/embed/<%= youtube_id %>" frameborder="0" allowfullscreen></iframe></div></div>');
+      document.querySelectorAll("#mainArea #area0 .pbNested .pbNestedWrapper")[0].insertAdjacentHTML("afterend", template({youtube_id: youtube_id}));
+      result = true;
+      break
   }
 
   return result;
