@@ -18,10 +18,11 @@
         "bibliobattle.user.js"
       ],
       "matches": [
-        "http://*.amazon.co.jp/*",
-        "https://*.amazon.co.jp/*",
-        "http://www.kinokuniya.co.jp/*",
-        "http://www.honyaclub.com/*",
+        "http://www.amazon.co.jp/*/dp/*",
+        "https://www.amazon.co.jp/*/dp/*",
+        "http://www.kinokuniya.co.jp/f/*",
+        "https://www.kinokuniya.co.jp/f/*",
+        "http://www.honyaclub.com/shop/g/*",
         "http://honto.jp/netstore/pd-book_*",
         "https://honto.jp/netstore/pd-book_*"
       ],
