@@ -1,23 +1,18 @@
 (function (){
 
-var escapeHTML = function (text){
-  return $('<div />').text(text).html();
-};
-
 var parseTSV = function (text){
-  var content = [];
+  var content;
+  var rows;
+  var header;
 
   if (text!=""){
-    var rows = escapeHTML(text).split("\n");
-    var header = rows.shift().split("\t");
-    for(var i=0, len=rows.length;i < len;i++){
-      var row = rows[i].split("\t");
-      var obj = {};
-      for(var j=0, jlen=header.length;j < jlen; j++){
-        obj[header[j]] = row[j];
-      }
-      content.push(obj);
-    }
+    rows = _.escape(text).split("\n");
+    header = rows.shift().split("\t");
+    content = _.map(rows, function (rowstr) {
+      return _.object(header, rowstr.split("\t"));
+    });
+  } else {
+    content = [];
   }
 
   return content;
