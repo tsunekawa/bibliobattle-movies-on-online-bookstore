@@ -113,7 +113,7 @@ var insertMovieByService = function (service_name, youtube_id){
       break;
     case "kinokuniya":
       template = _.template('<div class="career_box"><h3>ビブリオバトル動画</h3><iframe width="560" height="315" src="//www.youtube.com/embed/<%= youtube_id %>" frameborder="0" allowfullscreen></iframe></div><hr class="ymt_dlBtmBorder mb15" noshade />');
-      document.querySelectorAll(".career_box")[0].insertAdjacentHTML("beforebegin", template({youtube_id: youtube_id});
+      document.querySelectorAll(".career_box")[0].insertAdjacentHTML("beforebegin", template({youtube_id: youtube_id}));
       result = true;
       break;
   }
