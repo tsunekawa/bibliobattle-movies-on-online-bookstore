@@ -18,11 +18,29 @@ var parseTSV = function (text){
   return content;
 };
 
+var parseTSV = function (text){
+  var content;
+  var rows;
+  var header;
+
+  if (text!=""){
+    rows = _.escape(text).split("\n");
+    header = rows.shift().split("\t");
+    content = _.map(rows, function (rowstr) {
+      return _.object(header, rowstr.split("\t"));
+    });
+  } else {
+    content = [];
+  }
+
+  return content;
+};
+
 var loadSourceData = function (callback){
   var port = chrome.extension.connect();
   port.postMessage();
   port.onMessage.addListener(function (res){
-    callback.call(this, parseTSV(res));
+    callback.call(this, res);
   });
 
   return port;
@@ -86,10 +104,9 @@ var convert_isbn10to13 = function(_isbn10) {
 
 var getYoutubeID = function (res, target_isbn){
   var youtube_id;
-
-  for (var i=0, len=res.length; i < len;i++){
-    var row = res[i], isbn10, isbn13;
+  var row = _.find(res, function (row){
     var isbn = row["book:isbn"].replace(/-/g,"");
+
     if (target_isbn.length==10){
       target_isbn = convert_isbn10to13(target_isbn)
     }
@@ -97,10 +114,11 @@ var getYoutubeID = function (res, target_isbn){
       isbn = convert_isbn10to13(isbn);
     }
 
-    if (isbn==target_isbn){
-      youtube_id = row["movie:youtube_id"];
-      break;
-    }
+    return isbn == target_isbn;
+  });
+
+  if (_.isObject(row)){
+    youtube_id = row["movie:youtube_id"];
   }
 
   return youtube_id;
@@ -147,13 +165,18 @@ var insertMovieByService = function (service_name, youtube_id){
 // main block
 loadSourceData(function (res){
   var context     = extractPageContext();
+  var database    = parseTSV(res);
+
   if(_.isObject(context)){
     var target_isbn = context.isbn;
-    var youtube_id = getYoutubeID(res, target_isbn);
+    var youtube_id = getYoutubeID(database, target_isbn);
+
     if (_.isString(youtube_id)){
       insertMovieByService(context.service, youtube_id);
     }
+
   }
+  
 });
 
 
