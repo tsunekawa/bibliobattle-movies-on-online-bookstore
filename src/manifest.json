@@ -8,9 +8,13 @@
       "background.js"
     ]
   },
+  "web_accessible_resources": [
+    "underscore-min.map"
+  ],
   "content_scripts": [
     {
       "js": [
+        "underscore-min.js",
         "jquery-2.1.1.min.js",
         "bibliobattle.user.js"
       ],
