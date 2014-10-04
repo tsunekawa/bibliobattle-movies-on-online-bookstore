@@ -105,6 +105,10 @@ var convert_isbn10to13 = function(_isbn10) {
 var getYoutubeID = function (res, target_isbn){
   var youtube_id;
   var row = _.find(res, function (row){
+    if (!_.isString(row["book:isbn"])){
+      return false;
+    }
+
     var isbn = row["book:isbn"].replace(/-/g,"");
 
     if (target_isbn.length==10){
