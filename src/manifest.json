@@ -1,8 +1,8 @@
 {
   "manifest_version":2,
-  "version":"1.1.0",
+  "version":"1.2.0",
   "name": "ビブリオバトル動画 on オンライン書店",
-  "description": "オンライン書店の商品ページに対応するビブリオバトルのプレゼン動画を挿入します。対象書店: Amazon.co.jp、紀伊國屋書店",
+  "description": "オンライン書店の商品ページに対応するビブリオバトルのプレゼン動画を挿入します。対象書店: Amazon.co.jp、紀伊國屋書店、Honya Club.com、Honto.jp",
   "background": {
     "scripts": [
       "background.js"
