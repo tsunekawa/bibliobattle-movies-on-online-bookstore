@@ -61,17 +61,40 @@ var convert_isbn13to10 = function(isbn13) {
   return isbn10;
 };
 
+var convert_isbn10to13 = function(_isbn10) {
+  var weights = [1,3,1,3,1,3,1,3,1,3,1,3];
+  var isbn10 = _isbn10.replace(/-/g, "");
+  var numbers;
+  var check_digit;
+
+  if(isbn10.length!=10){
+    throw isbn10 + "is not ISBN10";
+  }
+
+  numbers = ("978"+isbn10).split("");
+  numbers.pop();
+ 
+  check_digit = 10 - ( _.chain(numbers)
+                        .clone()
+                        .zip(weights)
+                        .reduce(function (memo, pair){ return memo+(parseInt(pair[0]) * pair[1]) }, 0)
+                        .value() % 10 );
+
+  numbers.push(check_digit);
+  return numbers.join("");
+};
+
 var getYoutubeID = function (res, target_isbn){
   var youtube_id;
 
   for (var i=0, len=res.length; i < len;i++){
     var row = res[i], isbn10, isbn13;
     var isbn = row["book:isbn"].replace(/-/g,"");
-    if (target_isbn.length==13){
-      target_isbn = convert_isbn13to10(target_isbn)
+    if (target_isbn.length==10){
+      target_isbn = convert_isbn10to13(target_isbn)
     }
-    if (isbn.length==13){
-      isbn = convert_isbn13to10(isbn)
+    if (isbn.length==10){
+      isbn = convert_isbn10to13(isbn);
     }
 
     if (isbn==target_isbn){
