@@ -103,17 +103,20 @@ var extractPageContext = function (){
 
 var insertMovieByService = function (service_name, youtube_id){
   var result;
+  var template;
 
   switch(service_name){
     case "amazon":
+      template = _.template('<hr class="bucketDivider" /><div class="bucket"><h2>ビブリオバトル動画</h2><iframe width="560" height="315" src="//www.youtube.com/embed/<%= youtube_id %>" frameborder="0" allowfullscreen></iframe></div>');
       $(".bucketDivider:first").before(
-          $('<hr class="bucketDivider" /><div class="bucket"><h2>ビブリオバトル動画</h2><iframe width="560" height="315" src="//www.youtube.com/embed/<<id>>" frameborder="0" allowfullscreen></iframe></div>'.replace("<<id>>", youtube_id))
+          $(template({youtube_id: youtube_id}))
       );
       result = true;
       break;
     case "kinokuniya":
+      template = _.template('<div class="career_box"><h3>ビブリオバトル動画</h3><iframe width="560" height="315" src="//www.youtube.com/embed/<%= youtube_id %>" frameborder="0" allowfullscreen></iframe></div><hr class="ymt_dlBtmBorder mb15" noshade />');
       $(".career_box:first").before(
-          $('<div class="career_box"><h3>ビブリオバトル動画</h3><iframe width="560" height="315" src="//www.youtube.com/embed/<<id>>" frameborder="0" allowfullscreen></iframe></div><hr class="ymt_dlBtmBorder mb15" noshade />'.replace("<<id>>", youtube_id))
+          $(template({youtube_id: youtube_id}))
       );
       result = true;
       break;
@@ -125,10 +128,10 @@ var insertMovieByService = function (service_name, youtube_id){
 // main block
 loadSourceData(function (res){
   var context     = extractPageContext();
-  if(!!context){
+  if(_.isObject(context)){
     var target_isbn = context.isbn;
     var youtube_id = getYoutubeID(res, target_isbn);
-    if (!!youtube_id){
+    if (_.isString(youtube_id)){
       insertMovieByService(context.service, youtube_id);
     }
   }
