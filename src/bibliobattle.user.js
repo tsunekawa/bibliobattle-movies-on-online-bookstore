@@ -1,23 +1,18 @@
 (function (){
 
-var escapeHTML = function (text){
-  return $('<div />').text(text).html();
-};
-
 var parseTSV = function (text){
-  var content = [];
+  var content;
+  var rows;
+  var header;
 
   if (text!=""){
-    var rows = escapeHTML(text).split("\n");
-    var header = rows.shift().split("\t");
-    for(var i=0, len=rows.length;i < len;i++){
-      var row = rows[i].split("\t");
-      var obj = {};
-      for(var j=0, jlen=header.length;j < jlen; j++){
-        obj[header[j]] = row[j];
-      }
-      content.push(obj);
-    }
+    rows = _.escape(text).split("\n");
+    header = rows.shift().split("\t");
+    content = _.map(rows, function (rowstr) {
+      return _.object(header, rowstr.split("\t"));
+    });
+  } else {
+    content = [];
   }
 
   return content;
@@ -108,18 +103,17 @@ var extractPageContext = function (){
 
 var insertMovieByService = function (service_name, youtube_id){
   var result;
+  var template;
 
   switch(service_name){
     case "amazon":
-      $(".bucketDivider:first").before(
-          $('<hr class="bucketDivider" /><div class="bucket"><h2>ビブリオバトル動画</h2><iframe width="560" height="315" src="//www.youtube.com/embed/<<id>>" frameborder="0" allowfullscreen></iframe></div>'.replace("<<id>>", youtube_id))
-      );
+      template = _.template('<hr class="bucketDivider" /><div class="bucket"><h2>ビブリオバトル動画</h2><iframe width="560" height="315" src="//www.youtube.com/embed/<%= youtube_id %>" frameborder="0" allowfullscreen></iframe></div>');
+      document.querySelectorAll(".bucketDivider")[0].insertAdjacentHTML("beforebegin", template({youtube_id: youtube_id}));
       result = true;
       break;
     case "kinokuniya":
-      $(".career_box:first").before(
-          $('<div class="career_box"><h3>ビブリオバトル動画</h3><iframe width="560" height="315" src="//www.youtube.com/embed/<<id>>" frameborder="0" allowfullscreen></iframe></div><hr class="ymt_dlBtmBorder mb15" noshade />'.replace("<<id>>", youtube_id))
-      );
+      template = _.template('<div class="career_box"><h3>ビブリオバトル動画</h3><iframe width="560" height="315" src="//www.youtube.com/embed/<%= youtube_id %>" frameborder="0" allowfullscreen></iframe></div><hr class="ymt_dlBtmBorder mb15" noshade />');
+      document.querySelectorAll(".career_box")[0].insertAdjacentHTML("beforebegin", template({youtube_id: youtube_id}));
       result = true;
       break;
   }
@@ -130,10 +124,10 @@ var insertMovieByService = function (service_name, youtube_id){
 // main block
 loadSourceData(function (res){
   var context     = extractPageContext();
-  if(!!context){
+  if(_.isObject(context)){
     var target_isbn = context.isbn;
     var youtube_id = getYoutubeID(res, target_isbn);
-    if (!!youtube_id){
+    if (_.isString(youtube_id)){
       insertMovieByService(context.service, youtube_id);
     }
   }
