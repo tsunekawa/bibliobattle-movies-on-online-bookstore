@@ -135,6 +135,9 @@ var extractPageContext = function (){
   } else if (url.match(/^http[s]{0,1}:\/\/www.kinokuniya.co.jp\/.*$/)){
     isbn    = url.match(/[0-9X]{10,13}/)[0];
     context = {service:"kinokuniya", isbn:isbn};
+  } else if (url.match(/^http[s]{0,1}:\/\/www.honyaclub.com\/.*$/)) {
+    isbn    = /[0-9]{10,13}/.exec(document.querySelectorAll(".item-price")[0].innerHTML);
+    context = {service:"honyaclub", isbn:isbn};
   }else {
     context = null;
   }
@@ -155,6 +158,11 @@ var insertMovieByService = function (service_name, youtube_id){
     case "kinokuniya":
       template = _.template('<div class="career_box"><h3>ビブリオバトル動画</h3><iframe width="560" height="315" src="//www.youtube.com/embed/<%= youtube_id %>" frameborder="0" allowfullscreen></iframe></div><hr class="ymt_dlBtmBorder mb15" noshade />');
       document.querySelectorAll(".career_box")[0].insertAdjacentHTML("beforebegin", template({youtube_id: youtube_id}));
+      result = true;
+      break;
+    case "honyaclub":
+      template = _.template('<div class="detail-comment02"><b>ビブリオバトル動画</b><br><iframe width="560" height="315" src="//www.youtube.com/embed/<%= youtube_id %>" frameborder="0" allowfullscreen></iframe></div>');
+      document.querySelectorAll(".detail-block01")[0].insertAdjacentHTML("beforeend", template({youtube_id: youtube_id}));
       result = true;
       break;
   }

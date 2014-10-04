@@ -20,7 +20,8 @@
       "matches": [
         "http://*.amazon.co.jp/*",
         "https://*.amazon.co.jp/*",
-        "http://www.kinokuniya.co.jp/*"
+        "http://www.kinokuniya.co.jp/*",
+        "http://www.honyaclub.com/*"
       ],
       "run_at": "document_end"
     }
